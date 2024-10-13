@@ -3,22 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client to Client File Transfer</title>
+    <title>File Share</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333; text-align: center; padding: 50px;}
+        #upload-box { border: 2px dashed #999; padding: 20px; background: #fff; cursor: pointer;}
+        #link-box { margin-top: 20px; display: none;}
+    </style>
 </head>
 <body>
-    <h1>Client to Client File Transfer</h1>
-    
-    <!-- Upload Section for Client 1 -->
-    <input type="file" id="fileInput" />
-    <button id="sendFileBtn">Send File</button>
-    
-    <!-- Link to Share -->
-    <p id="shareLink"></p>
-    
-    <!-- Download Section for Client 2 -->
-    <button id="connectBtn">Connect to Client 1</button>
-    <a id="downloadLink" style="display:none;">Download File</a>
 
-    <script src="app.js"></script>
+<h1>Share Your File</h1>
+<div id="upload-box">Click to upload or drag your file here</div>
+<div id="link-box">
+    <h2>Your Shareable Link:</h2>
+    <p id="share-link"></p>
+</div>
+
+<script>
+    const uploadBox = document.getElementById('upload-box');
+    const linkBox = document.getElementById('link-box');
+    const shareLink = document.getElementById('share-link');
+
+    uploadBox.addEventListener('click', () => {
+        // Trigger file upload
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            uploadFile(file);
+        };
+        input.click();
+    });
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            linkBox.style.display = 'block';
+            shareLink.textContent = `domain.com/${data.link}`;
+        });
+    }
+</script>
+
 </body>
 </html>
